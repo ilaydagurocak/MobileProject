@@ -23,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.example.mobileproject.ui.theme.MobileProjectTheme
 import androidx.compose.ui.draw.clip
 
-class SixthPage : ComponentActivity() {
+class NinthPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -32,14 +32,14 @@ class SixthPage : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    SixthScreen()
+                    NinthScreen()
                 }
             }
         }
     }
 
     @Composable
-    fun SixthScreen() {
+    fun NinthScreen() {
         val context = LocalContext.current
 
         var locationExpanded by remember { mutableStateOf(false) }
@@ -141,104 +141,83 @@ class SixthPage : ComponentActivity() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Rent Collection Section
-            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                Text("Rent Collection", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(100.dp) // Adjust height to make it larger
-                        .background(Color(0xFFA5D6A7), shape = RoundedCornerShape(16.dp))
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.clickable {
-                            val intent = Intent(context, SeventhPage::class.java)
-                            context.startActivity(intent)
-                        }
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.house),
-                            contentDescription = "House",
-                            modifier = Modifier.size(48.dp)
-                        )
-                        Text("House", fontSize = 14.sp)
-                    }
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.clickable {
-                            val intent = Intent(context, EightPage::class.java)
-                            context.startActivity(intent)
-                        }
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.office),
-                            contentDescription = "Office",
-                            modifier = Modifier.size(48.dp)
-                        )
-                        Text("Office", fontSize = 14.sp)
-                    }
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.clickable {
-                            val intent = Intent(context, NinthPage::class.java)
-                            context.startActivity(intent)
-                        }
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.store),
-                            contentDescription = "Store",
-                            modifier = Modifier.size(48.dp)
-                        )
-                        Text("Store", fontSize = 14.sp)
-                    }
+            // Filter Buttons
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Button(onClick = {}, shape = RoundedCornerShape(50), colors = ButtonDefaults.buttonColors(Color(0xFFA5D6A7))) {
+                    Text("Price", color = Color.Black)
+                }
+                Button(onClick = {}, shape = RoundedCornerShape(50), colors = ButtonDefaults.buttonColors(Color(0xFFA5D6A7))) {
+                    Text("Security", color = Color.Black)
+                }
+                Button(onClick = {}, shape = RoundedCornerShape(50), colors = ButtonDefaults.buttonColors(Color(0xFFA5D6A7))) {
+                    Text("Extra", color = Color.Black)
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Maintenance Request Section
-            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                Text("Maintenance Request", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(100.dp) // Adjust height to make it larger
-                        .background(Color(0xFFA5D6A7), shape = RoundedCornerShape(16.dp))
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Image(
-                            painter = painterResource(id = R.drawable.tamir),
-                            contentDescription = "Repair",
-                            modifier = Modifier.size(48.dp)
-                        )
-                        Text("Repair", fontSize = 14.sp)
-                    }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Image(
-                            painter = painterResource(id = R.drawable.pestextermination),
-                            contentDescription = "Pest Extermination",
-                            modifier = Modifier.size(48.dp)
-                        )
-                        Text("Pest Extermination", fontSize = 14.sp)
-                    }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Image(
-                            painter = painterResource(id = R.drawable.cleaning),
-                            contentDescription = "Cleaning",
-                            modifier = Modifier.size(48.dp)
-                        )
-                        Text("Cleaning", fontSize = 14.sp)
-                    }
-                }
+            // Store List
+            when (selectedCity) {
+                "New York" -> StoreList(
+                    imageRes1 = R.drawable.image1,
+                    title1 = "NEW YORK TIMES STORE",
+                    contactInfo1 = "123456789",
+                    imageRes2 = R.drawable.image2,
+                    title2 = "NEW YORK CENTRAL STORE",
+                    contactInfo2 = "987654321",
+                    imageRes3 = R.drawable.image3,
+                    title3 = "NEW YORK EMPIRE STORE",
+                    contactInfo3 = "456789123"
+                )
+                "Los Angeles" -> StoreList(
+                    imageRes1 = R.drawable.image4,
+                    title1 = "LOS ANGELES SUNSET STORE",
+                    contactInfo1 = "123456789",
+                    imageRes2 = R.drawable.image5,
+                    title2 = "LOS ANGELES HOLLYWOOD STORE",
+                    contactInfo2 = "987654321",
+                    imageRes3 = R.drawable.image6,
+                    title3 = "LOS ANGELES BEACH STORE",
+                    contactInfo3 = "456789123"
+                )
+                "Chicago" -> StoreList(
+                    imageRes1 = R.drawable.image7,
+                    title1 = "CHICAGO SKYLINE STORE",
+                    contactInfo1 = "123456789",
+                    imageRes2 = R.drawable.image8,
+                    title2 = "CHICAGO RIVER STORE",
+                    contactInfo2 = "987654321",
+                    imageRes3 = R.drawable.image9,
+                    title3 = "CHICAGO LAKE STORE",
+                    contactInfo3 = "456789123"
+                )
+                "Houston" -> StoreList(
+                    imageRes1 = R.drawable.image10,
+                    title1 = "HOUSTON SPACE STORE",
+                    contactInfo1 = "123456789",
+                    imageRes2 = R.drawable.image11,
+                    title2 = "HOUSTON ENERGY STORE",
+                    contactInfo2 = "987654321",
+                    imageRes3 = R.drawable.image12,
+                    title3 = "HOUSTON BAYOU STORE",
+                    contactInfo3 = "456789123"
+                )
+                "Phoenix" -> StoreList(
+                    imageRes1 = R.drawable.image13,
+                    title1 = "PHOENIX DESERT STORE",
+                    contactInfo1 = "123456789",
+                    imageRes2 = R.drawable.image14,
+                    title2 = "PHOENIX MOUNTAIN STORE",
+                    contactInfo2 = "987654321",
+                    imageRes3 = R.drawable.image15,
+                    title3 = "PHOENIX SUN STORE",
+                    contactInfo3 = "456789123"
+                )
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -274,13 +253,7 @@ class SixthPage : ComponentActivity() {
                     )
                     Text("Favorites", fontSize = 12.sp)
                 }
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.clickable {
-                        val intent = Intent(context, EleventhPage::class.java)
-                        context.startActivity(intent)
-                    }
-                ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Image(
                         painter = painterResource(id = R.drawable.add),
                         contentDescription = "Add",
@@ -301,6 +274,64 @@ class SixthPage : ComponentActivity() {
                         modifier = Modifier.size(24.dp)
                     )
                     Text("Menu", fontSize = 12.sp)
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun StoreList(
+        imageRes1: Int, title1: String, contactInfo1: String,
+        imageRes2: Int, title2: String, contactInfo2: String,
+        imageRes3: Int, title3: String, contactInfo3: String
+    ) {
+        Column {
+            StoreItem(imageRes = imageRes1, title = title1, contactInfo = contactInfo1)
+            Spacer(modifier = Modifier.height(16.dp))
+            StoreItem(imageRes = imageRes2, title = title2, contactInfo = contactInfo2)
+            Spacer(modifier = Modifier.height(16.dp))
+            StoreItem(imageRes = imageRes3, title = title3, contactInfo = contactInfo3)
+        }
+    }
+
+    @Composable
+    fun StoreItem(imageRes: Int, title: String, contactInfo: String) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .background(Color.White)
+        ) {
+            Image(
+                painter = painterResource(id = imageRes),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = title,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+                Text(
+                    text = "Contact info: $contactInfo",
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = { /* Handle PRE-Application */ },
+                    shape = RoundedCornerShape(50),
+                    colors = ButtonDefaults.buttonColors(Color(0xFFA5D6A7))
+                ) {
+                    Text("PRE-Application", color = Color.Black)
                 }
             }
         }
