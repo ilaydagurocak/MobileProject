@@ -1,5 +1,6 @@
 package com.example.mobileproject
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -39,6 +40,7 @@ class AddHousePage : ComponentActivity() {
 
     @Composable
     fun AddHouseScreen() {
+        val context = LocalContext.current
         var houseName by remember { mutableStateOf("") }
         var houseFeatures by remember { mutableStateOf("") }
         var housePhoto by remember { mutableStateOf("") }
@@ -83,6 +85,8 @@ class AddHousePage : ComponentActivity() {
             Button(
                 onClick = {
                     // Handle add house logic
+                    val intent = Intent(context, EleventhPage::class.java)
+                    context.startActivity(intent)
                 },
                 shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(Color(0xFFA5D6A7)),
@@ -91,6 +95,22 @@ class AddHousePage : ComponentActivity() {
                     .fillMaxWidth()
             ) {
                 Text("Submit", color = Color.Black)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    val intent = Intent(context, EleventhPage::class.java)
+                    context.startActivity(intent)
+                },
+                shape = RoundedCornerShape(50),
+                colors = ButtonDefaults.buttonColors(Color.Gray),
+                modifier = Modifier
+                    .height(50.dp)
+                    .fillMaxWidth()
+            ) {
+                Text("Back", color = Color.Black)
             }
         }
     }

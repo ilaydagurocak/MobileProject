@@ -1,20 +1,22 @@
 package com.example.mobileproject
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -23,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.example.mobileproject.ui.theme.MobileProjectTheme
 import androidx.compose.ui.draw.clip
 
-class EleventhPage : ComponentActivity() {
+class MaintenanceRequestPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -32,14 +34,14 @@ class EleventhPage : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    EleventhScreen()
+                    MaintenanceRequestScreen()
                 }
             }
         }
     }
 
     @Composable
-    fun EleventhScreen() {
+    fun MaintenanceRequestScreen() {
         val context = LocalContext.current
 
         Column(
@@ -65,7 +67,12 @@ class EleventhPage : ComponentActivity() {
                         Image(
                             painter = painterResource(id = R.drawable.notifications),
                             contentDescription = "Notifications",
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable {
+                                    // Notifications button logic
+                                    Toast.makeText(context, "No new notifications", Toast.LENGTH_SHORT).show()
+                                }
                         )
                     }
                     Spacer(modifier = Modifier.width(16.dp))
@@ -103,20 +110,35 @@ class EleventhPage : ComponentActivity() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Add House Button
-            Button(
-                onClick = {
-                    val intent = Intent(context, AddHousePage::class.java)
-                    context.startActivity(intent)
-                },
-                shape = RoundedCornerShape(50),
-                colors = ButtonDefaults.buttonColors(Color(0xFFA5D6A7)),
+            // Maintenance Request Section
+            Column(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .height(50.dp)
                     .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Add House", color = Color.Black)
+                Text("Maintenance Request", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(32.dp))
+
+                MaintenanceItem(
+                    context = context,
+                    iconRes = R.drawable.tamir,
+                    title = "Repair"
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                MaintenanceItem(
+                    context = context,
+                    iconRes = R.drawable.cleaning,
+                    title = "Cleaning"
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                MaintenanceItem(
+                    context = context,
+                    iconRes = R.drawable.pestextermination,
+                    title = "Pest Extermination"
+                )
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -133,7 +155,7 @@ class EleventhPage : ComponentActivity() {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.clickable {
-                        val intent = Intent(context, EleventhPage::class.java)
+                        val intent = Intent(context, TenthPage::class.java)
                         context.startActivity(intent)
                     }
                 ) {
@@ -144,7 +166,13 @@ class EleventhPage : ComponentActivity() {
                     )
                     Text("Home", fontSize = 12.sp)
                 }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.clickable {
+                        val intent = Intent(context, FavoritesPage::class.java)
+                        context.startActivity(intent)
+                    }
+                ) {
                     Image(
                         painter = painterResource(id = R.drawable.favorites),
                         contentDescription = "Favorites",
@@ -152,7 +180,13 @@ class EleventhPage : ComponentActivity() {
                     )
                     Text("Favorites", fontSize = 12.sp)
                 }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.clickable {
+                        val intent = Intent(context, AddHousePage::class.java)
+                        context.startActivity(intent)
+                    }
+                ) {
                     Image(
                         painter = painterResource(id = R.drawable.add),
                         contentDescription = "Add",
@@ -174,6 +208,42 @@ class EleventhPage : ComponentActivity() {
                     )
                     Text("Menu", fontSize = 12.sp)
                 }
+            }
+        }
+    }
+
+    @Composable
+    fun MaintenanceItem(context: Context, iconRes: Int, title: String) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = iconRes),
+                    contentDescription = title,
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFA5D6A7))
+                        .padding(16.dp)
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = {
+                    Toast.makeText(context, "Request sent", Toast.LENGTH_SHORT).show()
+                },
+                shape = RoundedCornerShape(50),
+                colors = ButtonDefaults.buttonColors(Color(0xFFA5D6A7))
+            ) {
+                Text("Demand", color = Color.Black)
             }
         }
     }

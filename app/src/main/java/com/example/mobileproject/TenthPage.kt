@@ -72,7 +72,12 @@ class TenthPage : ComponentActivity() {
                     Image(
                         painter = painterResource(id = R.drawable.profile),
                         contentDescription = "Profile",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable {
+                                val intent = Intent(context, TwelfthPage::class.java)
+                                context.startActivity(intent)
+                            }
                     )
                 }
             }

@@ -115,7 +115,12 @@ class SixthPage : ComponentActivity() {
                     Image(
                         painter = painterResource(id = R.drawable.profile),
                         contentDescription = "Profile",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable {
+                                val intent = Intent(context, TwelfthPage::class.java)
+                                context.startActivity(intent)
+                            }
                     )
                 }
             }
@@ -214,7 +219,11 @@ class SixthPage : ComponentActivity() {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.clickable {
+                            val intent = Intent(context, MaintenanceRequestPage::class.java)
+                            context.startActivity(intent)
+                        }) {
                         Image(
                             painter = painterResource(id = R.drawable.tamir),
                             contentDescription = "Repair",
@@ -222,7 +231,11 @@ class SixthPage : ComponentActivity() {
                         )
                         Text("Repair", fontSize = 14.sp)
                     }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.clickable {
+                            val intent = Intent(context, MaintenanceRequestPage::class.java)
+                            context.startActivity(intent)
+                        }) {
                         Image(
                             painter = painterResource(id = R.drawable.pestextermination),
                             contentDescription = "Pest Extermination",
@@ -230,7 +243,11 @@ class SixthPage : ComponentActivity() {
                         )
                         Text("Pest Extermination", fontSize = 14.sp)
                     }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.clickable {
+                            val intent = Intent(context, MaintenanceRequestPage::class.java)
+                            context.startActivity(intent)
+                        }) {
                         Image(
                             painter = painterResource(id = R.drawable.cleaning),
                             contentDescription = "Cleaning",
@@ -266,7 +283,13 @@ class SixthPage : ComponentActivity() {
                     )
                     Text("Home", fontSize = 12.sp)
                 }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.clickable {
+                        val intent = Intent(context, FavoritesPage::class.java)
+                        context.startActivity(intent)
+                    }
+                ) {
                     Image(
                         painter = painterResource(id = R.drawable.favorites),
                         contentDescription = "Favorites",
@@ -277,7 +300,7 @@ class SixthPage : ComponentActivity() {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.clickable {
-                        val intent = Intent(context, EleventhPage::class.java)
+                        val intent = Intent(context, AddHousePage::class.java)
                         context.startActivity(intent)
                     }
                 ) {

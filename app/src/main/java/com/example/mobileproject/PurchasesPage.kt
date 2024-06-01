@@ -23,100 +23,45 @@ import androidx.compose.ui.text.font.FontWeight
 import com.example.mobileproject.ui.theme.MobileProjectTheme
 import androidx.compose.ui.draw.clip
 
-class EleventhPage : ComponentActivity() {
+class PurchasesPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val applications = intent.getParcelableArrayListExtra<FavoriteItem>("applications") ?: arrayListOf()
         setContent {
             MobileProjectTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    EleventhScreen()
+                    PurchasesScreen(applications)
                 }
             }
         }
     }
 
     @Composable
-    fun EleventhScreen() {
+    fun PurchasesScreen(applications: List<FavoriteItem>) {
         val context = LocalContext.current
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
+                .padding(16.dp)
         ) {
-            // Header Section
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color(0xFFDFF5E1))
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column(modifier = Modifier.clickable { /* Location selector logic */ }) {
-                    Text("Location", fontSize = 12.sp, color = Color.Gray)
-                    Text("New York", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box {
-                        Image(
-                            painter = painterResource(id = R.drawable.notifications),
-                            contentDescription = "Notifications",
-                            modifier = Modifier.size(24.dp)
-                        )
+            Text("Your Purchases", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                if (applications.isEmpty()) {
+                    Text("No purchases yet", fontSize = 16.sp, color = Color.Gray)
+                } else {
+                    applications.forEach { item ->
+                        PurchaseItemView(item)
+                        Spacer(modifier = Modifier.height(16.dp))
                     }
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Image(
-                        painter = painterResource(id = R.drawable.profile),
-                        contentDescription = "Profile",
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clickable {
-                                val intent = Intent(context, TwelfthPage::class.java)
-                                context.startActivity(intent)
-                            }
-                    )
                 }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Search Bar
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextField(
-                    value = "",
-                    onValueChange = {},
-                    placeholder = { Text("Search") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White, shape = RoundedCornerShape(8.dp))
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Add House Button
-            Button(
-                onClick = {
-                    val intent = Intent(context, AddHousePage::class.java)
-                    context.startActivity(intent)
-                },
-                shape = RoundedCornerShape(50),
-                colors = ButtonDefaults.buttonColors(Color(0xFFA5D6A7)),
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .height(50.dp)
-                    .fillMaxWidth()
-            ) {
-                Text("Add House", color = Color.Black)
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -133,7 +78,7 @@ class EleventhPage : ComponentActivity() {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.clickable {
-                        val intent = Intent(context, EleventhPage::class.java)
+                        val intent = Intent(context, TenthPage::class.java)
                         context.startActivity(intent)
                     }
                 ) {
@@ -144,7 +89,15 @@ class EleventhPage : ComponentActivity() {
                     )
                     Text("Home", fontSize = 12.sp)
                 }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.clickable {
+                        val intent = Intent(context, FavoritesPage::class.java).apply {
+                            putParcelableArrayListExtra("favorites", ArrayList(applications)) // Pass applications as favorites if needed
+                        }
+                        context.startActivity(intent)
+                    }
+                ) {
                     Image(
                         painter = painterResource(id = R.drawable.favorites),
                         contentDescription = "Favorites",
@@ -152,7 +105,13 @@ class EleventhPage : ComponentActivity() {
                     )
                     Text("Favorites", fontSize = 12.sp)
                 }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.clickable {
+                        val intent = Intent(context, AddHousePage::class.java)
+                        context.startActivity(intent)
+                    }
+                ) {
                     Image(
                         painter = painterResource(id = R.drawable.add),
                         contentDescription = "Add",
@@ -163,7 +122,7 @@ class EleventhPage : ComponentActivity() {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.clickable {
-                        val intent = Intent(context, SixthPage::class.java)
+                        val intent = Intent(context, EleventhPage::class.java)
                         context.startActivity(intent)
                     }
                 ) {
@@ -174,6 +133,39 @@ class EleventhPage : ComponentActivity() {
                     )
                     Text("Menu", fontSize = 12.sp)
                 }
+            }
+        }
+    }
+
+    @Composable
+    fun PurchaseItemView(item: FavoriteItem) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(8.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color.LightGray)
+        ) {
+            Image(
+                painter = painterResource(id = item.imageRes),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Column {
+                Text(
+                    text = item.name,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = item.description,
+                    fontSize = 14.sp
+                )
             }
         }
     }

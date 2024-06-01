@@ -72,6 +72,30 @@
             android:label="@string/app_name"
             android:theme="@style/Theme.MobileProject" />
 
+        <activity
+            android:name=".FavoritesPage"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MobileProject" />
+
+        <activity
+            android:name=".TwelfthPage"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MobileProject" />
+
+        <activity
+            android:name=".MaintenanceRequestPage"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MobileProject" />
+
+        <activity
+            android:name=".PurchasesPage"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MobileProject" />
+
+
+
+
+
     </application>
 
 </manifest>
