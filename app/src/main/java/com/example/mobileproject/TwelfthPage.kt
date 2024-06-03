@@ -1,5 +1,6 @@
 package com.example.mobileproject
 
+
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -14,6 +15,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -21,28 +23,71 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
+import coil.compose.rememberAsyncImagePainter
+import com.example.mobileproject.AddHousePage
+import com.example.mobileproject.EleventhPage
+import com.example.mobileproject.FavoritesPage
+import com.example.mobileproject.R
+import com.example.mobileproject.SixthPage
 import com.example.mobileproject.ui.theme.MobileProjectTheme
-import androidx.compose.ui.draw.clip
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class TwelfthPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val applications = intent.getParcelableArrayListExtra<FavoriteItem>("applications") ?: arrayListOf()
         setContent {
             MobileProjectTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    TwelfthScreen(applications)
+                    TwelfthScreen()
                 }
             }
         }
     }
 
     @Composable
-    fun TwelfthScreen(applications: List<FavoriteItem>) {
+    fun TwelfthScreen() {
         val context = LocalContext.current
+        val auth = FirebaseAuth.getInstance()
+        val firestore = FirebaseFirestore.getInstance()
+        val user = auth.currentUser
+
+        var name by remember { mutableStateOf("") }
+        var email by remember { mutableStateOf(user?.email ?: "") }
+        val applications = remember { mutableStateListOf<House>() }
+
+        // Fetch user profile and applications from Firestore
+        LaunchedEffect(Unit) {
+            user?.let {
+                val docRef = firestore.collection("users").document(it.uid)
+                docRef.get()
+                    .addOnSuccessListener { document ->
+                        if (document != null && document.exists()) {
+                            name = document.getString("name") ?: ""
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(context, "Failed to fetch user data", Toast.LENGTH_SHORT).show()
+                    }
+
+                firestore.collection("houses")
+                    .whereEqualTo("applicationSent", true)
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        applications.clear()
+                        for (document in documents) {
+                            val house = document.toObject(House::class.java)
+                            applications.add(house)
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(context, "Failed to fetch applications", Toast.LENGTH_SHORT).show()
+                    }
+            }
+        }
 
         Column(
             modifier = Modifier
@@ -54,53 +99,66 @@ class TwelfthPage : ComponentActivity() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            TextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email Address") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White, shape = RoundedCornerShape(8.dp)),
+                enabled = false
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            TextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Name") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White, shape = RoundedCornerShape(8.dp))
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Button(
                 onClick = {
-                    // Navigate to PurchasesScreen
-                    val intent = Intent(context, PurchasesPage::class.java).apply {
-                        putParcelableArrayListExtra("applications", ArrayList(applications))
+                    // Update user profile in Firestore
+                    user?.let {
+                        val userProfile = hashMapOf("name" to name)
+                        firestore.collection("users").document(it.uid)
+                            .set(userProfile)
+                            .addOnSuccessListener {
+                                Toast.makeText(context, "Profile updated successfully", Toast.LENGTH_SHORT).show()
+                            }
+                            .addOnFailureListener { e ->
+                                Toast.makeText(context, "Failed to update profile", Toast.LENGTH_SHORT).show()
+                            }
                     }
-                    context.startActivity(intent)
                 },
-                shape = RoundedCornerShape(50),
+                shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(Color(0xFFA5D6A7)),
                 modifier = Modifier
                     .height(50.dp)
                     .fillMaxWidth()
             ) {
-                Text("Your Purchases", color = Color.Black)
+                Text("Save", color = Color.Black)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
-                onClick = {
-                    // Handle "Items you Sold" logic here
-                },
-                shape = RoundedCornerShape(50),
-                colors = ButtonDefaults.buttonColors(Color(0xFFA5D6A7)),
-                modifier = Modifier
-                    .height(50.dp)
-                    .fillMaxWidth()
-            ) {
-                Text("Items you Sold", color = Color.Black)
-            }
+            Text("Applications Sent", fontSize = 24.sp, fontWeight = FontWeight.Bold)
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    // Handle Log Out logic
-                    Toast.makeText(context, "Logging out...", Toast.LENGTH_SHORT).show()
-                    (context as ComponentActivity).finishAffinity() // Closes all activities and exits the app
-                },
-                shape = RoundedCornerShape(50),
-                colors = ButtonDefaults.buttonColors(Color.Red),
-                modifier = Modifier
-                    .height(50.dp)
-                    .fillMaxWidth()
-            ) {
-                Text("Log Out", color = Color.White)
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                if (applications.isEmpty()) {
+                    Text("No applications sent yet", fontSize = 16.sp, color = Color.Gray)
+                } else {
+                    applications.forEach { house ->
+                        HouseItem(house)
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -170,6 +228,39 @@ class TwelfthPage : ComponentActivity() {
                     )
                     Text("Menu", fontSize = 12.sp)
                 }
+            }
+        }
+    }
+
+    @Composable
+    fun HouseItem(house: House) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(8.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color.LightGray)
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(house.imageUrl),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Column {
+                Text(
+                    text = house.name,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = house.features,
+                    fontSize = 14.sp
+                )
             }
         }
     }

@@ -2,6 +2,7 @@ package com.example.mobileproject
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -13,16 +14,28 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.text.font.FontWeight
+import coil.compose.rememberAsyncImagePainter
 import com.example.mobileproject.ui.theme.MobileProjectTheme
-import androidx.compose.ui.draw.clip
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.launch
+
+data class House(
+    val name: String = "",
+    val features: String = "",
+    val imageUrl: String = "",
+    val location: String = "",
+    val userId: String = "",
+    var documentId: String = "", // Changed to var
+    var applicationSent: Boolean = false // Add this field to track application status
+)
 
 class SeventhPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,17 +55,30 @@ class SeventhPage : ComponentActivity() {
     @Composable
     fun SeventhScreen() {
         val context = LocalContext.current
+        val firestore = FirebaseFirestore.getInstance()
 
         var locationExpanded by remember { mutableStateOf(false) }
         val cities = listOf("New York", "Los Angeles", "Chicago", "Houston", "Phoenix")
         var selectedCity by remember { mutableStateOf(cities[0]) }
+        val houses = remember { mutableStateListOf<House>() }
 
-        var notificationsExpanded by remember { mutableStateOf(false) }
-        val notifications = listOf("Notification 1", "Notification 2")
-
-        // Favorites and applications state
-        val favoriteItems = remember { mutableStateListOf<FavoriteItem>() }
-        val applications = remember { mutableStateListOf<FavoriteItem>() }
+        // Fetch houses from Firestore based on selected city
+        LaunchedEffect(selectedCity) {
+            firestore.collection("houses")
+                .whereEqualTo("location", selectedCity)
+                .get()
+                .addOnSuccessListener { documents ->
+                    houses.clear()
+                    for (document in documents) {
+                        val house = document.toObject(House::class.java)
+                        house.documentId = document.id // Save document ID
+                        houses.add(house)
+                    }
+                }
+                .addOnFailureListener { _ ->
+                    Toast.makeText(context, "Failed to fetch houses", Toast.LENGTH_SHORT).show()
+                }
+        }
 
         Column(
             modifier = Modifier
@@ -93,26 +119,8 @@ class SeventhPage : ComponentActivity() {
                             contentDescription = "Notifications",
                             modifier = Modifier
                                 .size(24.dp)
-                                .clickable { notificationsExpanded = true }
+                                .clickable { /* Handle notifications */ }
                         )
-                        DropdownMenu(
-                            expanded = notificationsExpanded,
-                            onDismissRequest = { notificationsExpanded = false }
-                        ) {
-                            if (notifications.isNotEmpty()) {
-                                notifications.forEach { notification ->
-                                    DropdownMenuItem(
-                                        text = { Text(text = notification) },
-                                        onClick = { notificationsExpanded = false }
-                                    )
-                                }
-                            } else {
-                                DropdownMenuItem(
-                                    text = { Text("No notifications") },
-                                    onClick = { notificationsExpanded = false }
-                                )
-                            }
-                        }
                     }
                     Spacer(modifier = Modifier.width(16.dp))
                     Image(
@@ -121,9 +129,7 @@ class SeventhPage : ComponentActivity() {
                         modifier = Modifier
                             .size(24.dp)
                             .clickable {
-                                val intent = Intent(context, TwelfthPage::class.java).apply {
-                                    putParcelableArrayListExtra("applications", ArrayList(applications))
-                                }
+                                val intent = Intent(context, TwelfthPage::class.java)
                                 context.startActivity(intent)
                             }
                     )
@@ -172,73 +178,7 @@ class SeventhPage : ComponentActivity() {
             Spacer(modifier = Modifier.height(16.dp))
 
             // Houses List
-            when (selectedCity) {
-                "New York" -> HouseList(
-                    imageRes1 = R.drawable.house1,
-                    title1 = "NEW YORK LALISA HOUSE",
-                    contactInfo1 = "34256781",
-                    imageRes2 = R.drawable.house2,
-                    title2 = "NEW YORK STARLIGHT HOUSE",
-                    contactInfo2 = "35698376",
-                    imageRes3 = R.drawable.house3,
-                    title3 = "NEW YORK SOFTVIBE HOUSE",
-                    contactInfo3 = "08367932",
-                    favoriteItems = favoriteItems,
-                    applications = applications
-                )
-                "Los Angeles" -> HouseList(
-                    imageRes1 = R.drawable.losangeles1,
-                    title1 = "LOS ANGELES MOON HOUSE",
-                    contactInfo1 = "34256781",
-                    imageRes2 = R.drawable.losangeles2,
-                    title2 = "LOS ANGELES WARM HOUSE",
-                    contactInfo2 = "35698376",
-                    imageRes3 = R.drawable.losangeles3,
-                    title3 = "LOS ANGELES HAPPY HOUSE",
-                    contactInfo3 = "08367932",
-                    favoriteItems = favoriteItems,
-                    applications = applications
-                )
-                "Chicago" -> HouseList(
-                    imageRes1 = R.drawable.chicago1,
-                    title1 = "CHICAGO DIOR HOUSE",
-                    contactInfo1 = "34256781",
-                    imageRes2 = R.drawable.chicago2,
-                    title2 = "CHICAGO CELINE HOUSE",
-                    contactInfo2 = "35698376",
-                    imageRes3 = R.drawable.chicago3,
-                    title3 = "CHICAGO GUESS HOUSE",
-                    contactInfo3 = "08367932",
-                    favoriteItems = favoriteItems,
-                    applications = applications
-                )
-                "Houston" -> HouseList(
-                    imageRes1 = R.drawable.houston1,
-                    title1 = "HOUSTON GREEN HOUSE",
-                    contactInfo1 = "34256781",
-                    imageRes2 = R.drawable.houston2,
-                    title2 = "HOUSTON WHITE HOUSE",
-                    contactInfo2 = "35698376",
-                    imageRes3 = R.drawable.houston3,
-                    title3 = "HOUSTON BLUE HOUSE",
-                    contactInfo3 = "08367932",
-                    favoriteItems = favoriteItems,
-                    applications = applications
-                )
-                "Phoenix" -> HouseList(
-                    imageRes1 = R.drawable.phoenix1,
-                    title1 = "PHOENIX BIG HOUSE",
-                    contactInfo1 = "34256781",
-                    imageRes2 = R.drawable.phoenix2,
-                    title2 = "PHOENIX SMALL HOUSE",
-                    contactInfo2 = "35698376",
-                    imageRes3 = R.drawable.phoenix3,
-                    title3 = "PHOENIX SKY HOUSE",
-                    contactInfo3 = "08367932",
-                    favoriteItems = favoriteItems,
-                    applications = applications
-                )
-            }
+            HouseList(houses)
 
             Spacer(modifier = Modifier.weight(1f))
 
@@ -254,7 +194,7 @@ class SeventhPage : ComponentActivity() {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.clickable {
-                        val intent = Intent(context, TenthPage::class.java)
+                        val intent = Intent(context, EleventhPage::class.java)
                         context.startActivity(intent)
                     }
                 ) {
@@ -268,9 +208,7 @@ class SeventhPage : ComponentActivity() {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.clickable {
-                        val intent = Intent(context, FavoritesPage::class.java).apply {
-                            putParcelableArrayListExtra("favorites", ArrayList(favoriteItems))
-                        }
+                        val intent = Intent(context, FavoritesPage::class.java)
                         context.startActivity(intent)
                     }
                 ) {
@@ -308,26 +246,22 @@ class SeventhPage : ComponentActivity() {
     }
 
     @Composable
-    fun HouseList(
-        imageRes1: Int, title1: String, contactInfo1: String,
-        imageRes2: Int, title2: String, contactInfo2: String,
-        imageRes3: Int, title3: String, contactInfo3: String,
-        favoriteItems: SnapshotStateList<FavoriteItem>,
-        applications: SnapshotStateList<FavoriteItem>
-    ) {
+    fun HouseList(houses: List<House>) {
         Column {
-            HouseItem(imageRes = imageRes1, title = title1, contactInfo = contactInfo1, favoriteItems = favoriteItems, applications = applications)
-            Spacer(modifier = Modifier.height(16.dp))
-            HouseItem(imageRes = imageRes2, title = title2, contactInfo = contactInfo2, favoriteItems = favoriteItems, applications = applications)
-            Spacer(modifier = Modifier.height(16.dp))
-            HouseItem(imageRes = imageRes3, title = title3, contactInfo = contactInfo3, favoriteItems = favoriteItems, applications = applications)
+            houses.forEach { house ->
+                HouseItem(house)
+                Spacer(modifier = Modifier.height(16.dp))
+            }
         }
     }
 
     @Composable
-    fun HouseItem(imageRes: Int, title: String, contactInfo: String, favoriteItems: SnapshotStateList<FavoriteItem>, applications: SnapshotStateList<FavoriteItem>) {
-        var isFavorite by remember { mutableStateOf(favoriteItems.any { it.name == title }) }
-        var applicationSent by remember { mutableStateOf(false) }
+    fun HouseItem(house: House) {
+        var isFavorite by remember { mutableStateOf(false) }
+        var applicationSent by remember { mutableStateOf(house.applicationSent) }
+        val firestore = FirebaseFirestore.getInstance()
+        val context = LocalContext.current
+        val scope = rememberCoroutineScope()
 
         Row(
             modifier = Modifier
@@ -336,7 +270,7 @@ class SeventhPage : ComponentActivity() {
                 .background(Color.White)
         ) {
             Image(
-                painter = painterResource(id = imageRes),
+                painter = rememberAsyncImagePainter(house.imageUrl),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -348,13 +282,18 @@ class SeventhPage : ComponentActivity() {
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = title,
+                    text = house.name,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
                 Text(
-                    text = "Contact info: $contactInfo",
+                    text = "Features: ${house.features}",
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+                Text(
+                    text = "Contact info: ${house.userId}", // Change to actual contact info if available
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
@@ -362,8 +301,21 @@ class SeventhPage : ComponentActivity() {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Button(
                         onClick = {
-                            applications.add(FavoriteItem(name = title, description = contactInfo, imageRes = imageRes))
                             applicationSent = true
+                            house.applicationSent = true
+                            // Update application status in Firestore
+                            firestore.collection("houses").document(house.documentId)
+                                .update("applicationSent", true)
+                                .addOnSuccessListener {
+                                    scope.launch {
+                                        Toast.makeText(context, "Application sent", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                                .addOnFailureListener {
+                                    scope.launch {
+                                        Toast.makeText(context, "Failed to update application status", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
                         },
                         shape = RoundedCornerShape(50),
                         colors = ButtonDefaults.buttonColors(Color(0xFFA5D6A7))
@@ -377,13 +329,7 @@ class SeventhPage : ComponentActivity() {
                         modifier = Modifier
                             .size(24.dp)
                             .clickable {
-                                isFavorite = if (isFavorite) {
-                                    favoriteItems.removeAll { it.name == title }
-                                    false
-                                } else {
-                                    favoriteItems.add(FavoriteItem(name = title, description = contactInfo, imageRes = imageRes))
-                                    true
-                                }
+                                isFavorite = !isFavorite
                             },
                         tint = if (isFavorite) Color.Red else Color.Gray
                     )

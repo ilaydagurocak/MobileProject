@@ -1,5 +1,6 @@
 plugins {
-    alias(libs.plugins.androidApplication)
+    id("com.android.application")
+    id("com.google.gms.google-services")
     alias(libs.plugins.jetbrainsKotlinAndroid)
 }
 
@@ -50,7 +51,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -59,6 +59,9 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.storage.ktx)
+    implementation(libs.androidx.room.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -66,4 +69,24 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
+
+    // Firebase Analytics
+    implementation("com.google.firebase:firebase-analytics")
+
+    implementation("com.google.firebase:firebase-auth-ktx")
+
+    implementation ("com.google.firebase:firebase-firestore-ktx")
+
+    implementation("com.google.firebase:firebase-storage-ktx")
+
+    implementation("io.coil-kt:coil-compose:2.1.0")
+
+    implementation("androidx.activity:activity-compose:1.3.1")
+
+    // Diğer Firebase ürünleri için bağımlılıklar ekleyebilirsiniz
+    // https://firebase.google.com/docs/android/setup#available-libraries adresinden mevcut kütüphaneleri kontrol edebilirsiniz
 }
+

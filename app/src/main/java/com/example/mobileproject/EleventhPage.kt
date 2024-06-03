@@ -116,7 +116,7 @@ class EleventhPage : ComponentActivity() {
                     .height(50.dp)
                     .fillMaxWidth()
             ) {
-                Text("Add House", color = Color.Black)
+                Text("Add", color = Color.Black)
             }
 
             Spacer(modifier = Modifier.weight(1f))

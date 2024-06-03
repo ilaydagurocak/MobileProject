@@ -19,10 +19,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import com.example.mobileproject.ui.theme.MobileProjectTheme
+import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseApp.initializeApp(this)
         setContent {
             MobileProjectTheme {
                 Surface(
@@ -86,3 +88,4 @@ fun OnboardingScreen() {
         }
     }
 }
+

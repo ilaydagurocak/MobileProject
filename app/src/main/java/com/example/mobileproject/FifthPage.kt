@@ -24,6 +24,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mobileproject.ui.theme.MobileProjectTheme
+import com.google.firebase.auth.FirebaseAuth
+import android.widget.Toast
 
 class FifthPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -128,8 +130,21 @@ class FifthPage : ComponentActivity() {
 
                 Button(
                     onClick = {
-                        val intent = Intent(context, SixthPage::class.java)
-                        context.startActivity(intent)
+                        val auth = FirebaseAuth.getInstance()
+                        if (password.value == confirmPassword.value) {
+                            auth.createUserWithEmailAndPassword(email.value, password.value)
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        val intent = Intent(context, SixthPage::class.java)
+                                        context.startActivity(intent)
+                                        Toast.makeText(context, "Kayıt başarılı", Toast.LENGTH_SHORT).show()
+                                    } else {
+                                        Toast.makeText(context, "Kayıt başarısız: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                        } else {
+                            Toast.makeText(context, "Şifreler uyuşmuyor", Toast.LENGTH_SHORT).show()
+                        }
                     },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier

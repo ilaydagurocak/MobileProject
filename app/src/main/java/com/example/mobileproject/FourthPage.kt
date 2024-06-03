@@ -24,6 +24,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mobileproject.ui.theme.MobileProjectTheme
+import com.google.firebase.auth.FirebaseAuth
+import android.widget.Toast
 
 class FourthPage : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -129,8 +131,17 @@ class FourthPage : ComponentActivity() {
 
                 Button(
                     onClick = {
-                        val intent = Intent(context, SixthPage::class.java)
-                        context.startActivity(intent)
+                        val auth = FirebaseAuth.getInstance()
+                        auth.signInWithEmailAndPassword(email.value, password.value)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    val intent = Intent(context, SixthPage::class.java)
+                                    context.startActivity(intent)
+                                    Toast.makeText(context, "Giriş başarılı", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(context, "Giriş başarısız: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                                }
+                            }
                     },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
